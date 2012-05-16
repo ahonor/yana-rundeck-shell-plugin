@@ -1,12 +1,22 @@
+This plugin provides a Rundeck [ResourceModelSource](http://rundeck.org/docs/developer/plugin-development.html#resource-model-source-providers) 
+to [YANA](https://github.com/dtolabs/yana2). 
+This is also an example of a 
+[Resource model script plugin](http://rundeck.org/docs/developer/plugin-development.html#configurable-resource-model-source-script-plugin)
+and is implemented as a simple Bash script.
+
 Dependencies
 ------------
 
-* xmlstarlet: http://xmlstar.sourceforge.net/docs.php
+Ensure the following are installed on the Rundeck server (or where you plan to execute this plugin).
+
+* bash: The plugin uses a bash script implementation.
+* [xmlstarlet](http://xmlstar.sourceforge.net/docs.php): 
 
 Building
 --------
 
-Run the `make` command to produce a Zip suitable for installation.
+* Change directory to your working file set
+* Run the `make` command to produce a Zip suitable for installation.
 
 Installation
 ------------
