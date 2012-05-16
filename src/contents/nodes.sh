@@ -1,8 +1,14 @@
 #!/bin/bash
-
-# Reference: http://rundeck.org/docs/manpages/man5/resource-v13.html
+#
+# Interfaces Yana and returns Node data formatted in XML format:
+# * Reference: http://rundeck.org/docs/manpages/man5/resource-v13.html
 
 die() { echo "ERROR: $@" ; exit 1 ; }
+
+# Dependencies verification:
+# * xmlstarlet
+(which xmlstarlet >/dev/null) || die "xmlstarlet not found"
+
 
 #
 # Lookup the plugin config settings exported as env vars

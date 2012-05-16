@@ -13,6 +13,7 @@
 <xsl:template match="node">
   <node name="{@name}" description="{description}" 
 	type="{@type}" id="{@id}" tags="{@tags}" 
+	hostname="{@name}"
 	username="{$username}" editUrl="{$url}/node/show/{@id}">
     <xsl:apply-templates select="attributes/attribute"/>
   </node>
