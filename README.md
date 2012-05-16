@@ -1,3 +1,8 @@
+Dependencies
+------------
+
+* xmlstarlet: http://xmlstar.sourceforge.net/docs.php
+
 Building
 --------
 
