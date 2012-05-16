@@ -1,0 +1,37 @@
+name: Yana Rundeck Plugin
+version: 1.0
+rundeckPluginVersion: 1.0
+author: alexh
+date: 5/10/12
+providers:
+    - name: yana-rundeck-plugin
+      service: ResourceModelSource
+      plugin-type: script
+      script-interpreter: /bin/bash
+      script-file: nodes.sh
+      title: Yana Rundeck Plugin
+      description: Get data from Yana
+      resource-format: resourcexml
+      config:
+        - type: String
+          name: nodetype
+          title: Node Type
+          description: The NodeType to search
+          default: Server
+        - type: String
+          name: url
+          title: URL
+          description: The node authority URL
+          default: ''
+        - type: String
+          name: username
+          title: Username
+          description: The Yana username
+        - type: String
+          name: password
+          title: Password
+          description: The Yana password
+
+
+
+
