@@ -3,48 +3,58 @@
 # Interfaces Yana and returns Node data formatted in XML format:
 # * Reference: http://rundeck.org/docs/manpages/man5/resource-v13.html
 
-die() { echo "ERROR: $@" ; exit 1 ; }
+# Fail if a command errors or an unset variable is referenced.
+set -eu
 
 # Dependencies verification:
+#
 # * xmlstarlet
-(which xmlstarlet >/dev/null) || die "xmlstarlet not found"
+(which xmlstarlet >/dev/null) 
 
 
 #
-# Lookup the plugin config settings exported as env vars
+# Default unset plugin config settings.
 #
 
 # URL to remote server
-[ -z "$RD_CONFIG_URL" ] && RD_CONFIG_URL=http://localhost:8080
-# Type name to filter 
-[ -z "${RD_CONFIG_NODETYPE}" ] && RD_CONFIG_NODETYPE=Node
+: ${RD_CONFIG_URL=http://localhost:8080/yana2}
 # Yana username
-[ -z "${RD_CONFIG_USERNAME}" ] && RD_CONFIG_USERNAME=admin
+: ${RD_CONFIG_USERNAME=admin}
 # Yana password
-[ -z "${RD_CONFIG_PASSWORD}" ] && RD_CONFIG_PASSWORD=admin
+: ${RD_CONFIG_PASSWORD=admin}
+
+
+
 
 # Temporary working files
 cookie=/tmp/yana-rundeck-shell-plugin.tmp.cookie
 response=/tmp/yana-rundeck-shell-plugin.tmp.response
 
+# Set up curl to fail on error and run silently.
+CURLOPTS="-k -f -s -S -L -c cookies -b cookies"
+CURL="curl $CURLOPTS"
+
 
 #
 # Login and create a session
 #
-curl --fail --silent \
-    --data "j_username=${RD_CONFIG_PASSWORD}&j_password=${RD_CONFIG_PASSWORD}" \
-    ${RD_CONFIG_URL}/springSecurityApp/j_spring_security_check \
-    --cookie-jar ${cookie} || die "login failed for \${RD_CONFIG_USER}: ${RD_CONFIG_USER}"
+$CURL --data "j_username=${RD_CONFIG_PASSWORD}&j_password=${RD_CONFIG_PASSWORD}" \
+    ${RD_CONFIG_URL}/j_spring_security_check >/dev/null
 #
 # Retrieve the data from Yana
 #
-curl --fail --silent ${RD_CONFIG_URL}/node/list?format=xml \
-    --cookie ${cookie} -o ${response} || die "failed obtaining Yana listing: ${RD_CONFIG_URL}"
+
+# List any nodes
+#$CURL ${RD_CONFIG_URL}/api/node/list/xml?project=$RD_PROJECT > $response
+
+# Search nodes for any matching nodetype.
+query="nodetype:$RD_CONFIG_NODETYPE"; # The colon char will be encoded as %3A in the url.
+$CURL -X GET "${RD_CONFIG_URL}/search/index?format=xml&project=${RD_CONFIG_PROJECT}&q=${query/:/%3A}" > $response
 
 #
 # Validate the response is well formed XML
 #
-xmlstarlet val --well-formed --quiet ${response} 2>/dev/null || die "Yana response failed XML validation"
+xmlstarlet val --well-formed --quiet ${response} 2>/dev/null 
 
 #
 # Transform into RundeckXml format
@@ -52,9 +62,11 @@ xmlstarlet val --well-formed --quiet ${response} 2>/dev/null || die "Yana respon
 xmlstarlet tr $(dirname $0)/rundeck.xsl \
     -s username=${RD_CONFIG_USERNAME} \
     -s url=${RD_CONFIG_URL} \
-    -s nodeType=${RD_CONFIG_NODETYPE} ${response} | xmlstarlet fo || die "XML transformation failed"
+    -s nodeType=${RD_CONFIG_NODETYPE} ${response} | 
+xmlstarlet fo 
 
 
 #
 # Done.
 #
+exit $?

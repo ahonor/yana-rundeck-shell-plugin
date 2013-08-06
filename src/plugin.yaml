@@ -1,23 +1,27 @@
-name: Yana Rundeck Plugin
-version: 1.0
+name: YANA Resource Model Source
+version: 1.1
 rundeckPluginVersion: 1.0
 author: alexh
 date: 5/10/12
 providers:
-    - name: yana-rundeck-plugin
+    - name: yana-nodes
       service: ResourceModelSource
       plugin-type: script
       script-interpreter: /bin/bash
       script-file: nodes.sh
-      title: Yana Rundeck Plugin
-      description: Get data from Yana
+      title: YANA Resource Model Source
+      description: Get node data from YANA
       resource-format: resourcexml
       config:
         - type: String
           name: nodetype
           title: Node Type
           description: The NodeType to search
-          default: Server
+          default: Host
+        - type: String
+          name: project
+          title: Project 
+          description: The YANA project name
         - type: String
           name: url
           title: URL
